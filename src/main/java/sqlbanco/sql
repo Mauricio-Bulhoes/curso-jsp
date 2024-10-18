@@ -1,0 +1,89 @@
+
+CREATE DATABASE "curso-jsp"
+  WITH OWNER = postgres
+       ENCODING = 'UTF8'
+       TABLESPACE = pg_default
+       LC_COLLATE = 'Portuguese_Brazil.1252'
+       LC_CTYPE = 'Portuguese_Brazil.1252'
+       CONNECTION LIMIT = -1;
+
+
+
+CREATE TABLE public.model_login
+(
+  login character varying(200) NOT NULL,
+  senha character varying(200) NOT NULL,
+  id integer NOT NULL DEFAULT nextval('model_login_id_seq'::regclass),
+  nome character varying(300) NOT NULL,
+  email character varying(300),
+  CONSTRAINT model_login_pkey PRIMARY KEY (id),
+  CONSTRAINT login_unique UNIQUE (login)
+)
+WITH (
+  OIDS=FALSE
+);
+ALTER TABLE public.model_login
+  OWNER TO postgres;
+  
+ INSERT INTO public.model_login(
+            login, senha)
+    VALUES ('admin', 'admin');
+    
+alter table model_login add column useradmin boolean not null default false;
+
+alter table model_login add column usuario_id bigint not null default 1;
+
+alter table model_login add constraint usuario_fk foreign key (usuario_id) references model_login (id);
+
+ALTER TABLE public.model_login ADD COLUMN perfil character varying(200);
+
+ALTER TABLE public.model_login ADD COLUMN sexo character varying(200);
+
+UPDATE model_login set sexo = 'MASCULINO' where sexo is null;
+
+ALTER TABLE public.model_login ADD COLUMN fotouser text;
+ALTER TABLE public.model_login ADD COLUMN extensaofotouser character varying(10);
+
+ALTER TABLE public.model_login ADD COLUMN cep character varying(250);
+ALTER TABLE public.model_login ADD COLUMN logradouro character varying(250);
+ALTER TABLE public.model_login ADD COLUMN bairro character varying(250);
+ALTER TABLE public.model_login ADD COLUMN localidade character varying(250);
+ALTER TABLE public.model_login ADD COLUMN uf character varying(250);
+ALTER TABLE public.model_login ADD COLUMN numero character varying(250);
+
+CREATE SEQUENCE public.telefone_seq
+  INCREMENT 1
+  MINVALUE 1
+  MAXVALUE 9223372036854775807
+  START 1
+  CACHE 1;
+  
+create table telefone (
+	id integer not null default nextval('telefone_seq'::regclass),
+	numero character varying(50) not null,
+	usuario_pai_id bigint not null,
+	usuario_cad_id bigint not null,
+	
+	constraint telefone_pkey primary key (id),
+	constraint usuario_pai_fk foreign key (usuario_pai_id) references model_login (id),
+	constraint usuario_cad_fk foreign key (usuario_cad_id) references model_login (id)
+)
+
+alter table model_login add column datanascimento date;
+
+alter table model_login add column rendamensal double precision;
+
+CREATE SEQUENCE public.versionadorbanco_seq
+  INCREMENT 1
+  MINVALUE 1
+  MAXVALUE 9223372036854775807
+  START 1
+  CACHE 1;
+  
+ CREATE TABLE public.versionadorbanco
+(
+  id integer NOT NULL DEFAULT nextval('versionadorbanco_seq'::regclass),
+  arquivo_sql character varying(50) NOT NULL,
+  constraint id_pk primary key (id)
+);
+  
